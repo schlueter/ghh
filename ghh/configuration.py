@@ -1,6 +1,3 @@
-import os
-import sys
-
 import yaml
 
 from ghh.errors import ConfigurationException
@@ -16,8 +13,8 @@ class Configuration:
             for key in raw_config:
                 setattr(self, key, raw_config[key])
         except Exception as e:
-            raise ConfigurationException(f"Configuration file {config_file.name} could not be parsed. Please see documentation.")
+            raise ConfigurationException(config_file)
 
         for parameter in REQUIRED_PARAMETERS:
             if not hasattr(self, parameter):
-                raise ConfigurationException(f"Missing required parameter {parameter}")
+                raise ConfigurationException(parameter)
