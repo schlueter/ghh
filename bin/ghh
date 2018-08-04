@@ -3,6 +3,7 @@
 """ghh, a hook handler for GitHub"""
 
 import argparse
+import sys
 
 import bjoern
 
@@ -10,22 +11,32 @@ from ghh.errors import ServerError
 from ghh.app import WSGIApp
 
 
-def serve_ghh(host_or_socket='', port=None, reuse_port=False):
-    """Server ghh with bjoern
-
-    Either port or socket must be specified. If port is specified and host is not,
-    host defaults to be 0.0.0.0. Bjoern's ruse_port is also exposed.
-    """
-    bjoern.run(WSGIAPP, host_or_socket, port, reuse_port)
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('host_or_socket', type=str, help='A hostname or socket to listen on.')
-    parser.add_argument('-p', '--port', type=int, help='A port to listen on.')
-    parser.add_argument('-r', '--reuse-port', action='store_true', help='Enables SO_REUSEPORT if available.')
+    parser.add_argument('host_or_socket',
+                        type=str,
+                        help='A hostname or socket to listen on.')
+    parser.add_argument('-p', '--port',
+                        type=int,
+                        help='A port to listen on.')
+    parser.add_argument('-r', '--reuse-port',
+                        action='store_true',
+                        help='Enables SO_REUSEPORT if available.')
+    parser.add_argument('-c', '--config-file',
+                        type=argparse.FileType('r'),
+                        default='etc/ghh/config.yml',
+                        help='A port to listen on.')
     return parser.parse_args()
 
 
+def main(args):
+    try:
+        app = WSGIApp(args.config_file)
+        bjoern.run(app, args.host_or_socket, args.port, reuse_port=args.reuse_port)
+    except KeyboardInterrupt:
+        print('\rExit requested', file=sys.stderr)
+        exit()
+
+
 if __name__ == '__main__':
-    serve_ghh(**vars(parse_args()))
+    main(parse_args())
