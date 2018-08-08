@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import sys
+from boron import BoronApp
 
 
-version = '1.0.0alpha1'
-description = """GitHub Hook Handler"""
-default_config_file = os.path.join(sys.prefix, 'etc/ghh/config.yml')
+def main():
+    import ghh
+    from .wsgi import GhhWSGIApp
+
+    app = BoronApp(GhhWSGIApp, ghh.description, ghh.default_config_file)
+    app.main()

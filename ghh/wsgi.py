@@ -14,10 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import sys
+from boron import WSGIApp
 
 
-version = '1.0.0alpha1'
-description = """GitHub Hook Handler"""
-default_config_file = os.path.join(sys.prefix, 'etc/ghh/config.yml')
+class GhhWSGIApp(WSGIApp):
+
+    def handle_http_get(self, environ, start_response):
+        """
+        Handle POSTs
+
+        Delegates POST requests for known GitHub events to their handlers.
+
+        Unknown events are responded to with 400
+        """
+        response_headers = [
+            ('Content-type', 'text/html'),
+        ]
+        start_response('200 Accepted', response_headers)
+        return """
+        <div style="margin: 0 auto; font-size: 24px; position: relative; top: 50vp; width: 500px;">
+            This is a {method}. I can handle this!
+        """ .format(method=environ['REQUEST_METHOD'])

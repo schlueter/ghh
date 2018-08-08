@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-#
-# Copyright 2017 Brandon Schlueter
+# Copyright 2018 Brandon Schlueter
 # This file is part of ghh.
 #
 # Ghh is free software: you can redistribute it and/or modify
@@ -12,33 +11,32 @@
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
 
-import os
 from setuptools import setup
 
 
-scripts = [os.path.join('bin', f)
-           for f in os.listdir('bin')
-           if os.path.isfile(os.path.join('bin', f))]
+ghh = __import__('ghh')
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
     name='ghh',
-    description='GitHub Hook Handler',
+    author='Brandon Schlueter',
     author_email='b@schlueter.blue',
+    description=ghh.description,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url='http://ghh.schlueter.blue',
+    version=ghh.version,
     license='GNU General Public License v3 or later (GPLv3+)',
     packages=['ghh'],
-    author='Brandon Schlueter',
-    version='0.0.1',
-    scripts=scripts,
     install_requires=[
-        'bjoern',
-        'pyyaml',
+        'boron',
     ],
     classifiers=[
         'Development Status :: 1 - Planning',
@@ -56,4 +54,10 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: HTTP Servers',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Utilities',
-    ])
+    ],
+    entry_points={
+        'console_scripts': [
+            'ghh = ghh.cli:main',
+        ],
+    },
+)
